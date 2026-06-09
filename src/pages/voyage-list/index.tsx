@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView } from '@tarojs/components';
-import Taro, { usePullDownRefresh } from '@tarojs/taro';
+import Taro, { usePullDownRefresh, useDidShow } from '@tarojs/taro';
 import styles from './index.module.scss';
 import classnames from 'classnames';
 import VoyageCard from '@/components/VoyageCard';
-import { mockVoyages } from '@/data/voyage';
+import useAppStore from '@/store/app';
 import { VoyageStatus } from '@/types';
 
 const filterOptions: { key: VoyageStatus | 'all'; label: string }[] = [
@@ -19,7 +19,16 @@ const filterOptions: { key: VoyageStatus | 'all'; label: string }[] = [
 
 const VoyageListPage: React.FC = () => {
   const [activeFilter, setActiveFilter] = useState<VoyageStatus | 'all'>('all');
-  const [voyages, setVoyages] = useState(mockVoyages);
+  const voyages = useAppStore(state => state.voyages);
+  const initFromStorage = useAppStore(state => state.initFromStorage);
+
+  useEffect(() => {
+    initFromStorage();
+  }, [initFromStorage]);
+
+  useDidShow(() => {
+    initFromStorage();
+  });
 
   const filteredVoyages = activeFilter === 'all'
     ? voyages
@@ -43,9 +52,10 @@ const VoyageListPage: React.FC = () => {
   };
 
   usePullDownRefresh(() => {
+    initFromStorage();
     setTimeout(() => {
       Taro.stopPullDownRefresh();
-    }, 1000);
+    }, 500);
   });
 
   return (

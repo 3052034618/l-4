@@ -7,7 +7,11 @@
   padding-bottom: 160rpx;
 }
 
-.cardContainer {
+.cardPreview {
+  margin-bottom: $spacing-lg;
+}
+
+.previewCard {
   background-color: $color-bg-card;
   border-radius: $radius-xl;
   box-shadow: $shadow-popup;
@@ -44,51 +48,74 @@
   }
 }
 
-.cardTitle {
-  font-size: $font-size-xs;
-  opacity: 0.8;
-  margin-bottom: $spacing-xs;
-  position: relative;
-  z-index: 1;
-}
-
-.voyageNo {
-  font-size: $font-size-xxl;
-  font-weight: $font-weight-bold;
-  position: relative;
-  z-index: 1;
-}
-
-.statusBadge {
+.statusTag {
   display: inline-block;
   padding: 6rpx 20rpx;
   border-radius: $radius-button;
   font-size: $font-size-sm;
-  background: rgba(255, 255, 255, 0.25);
-  margin-top: $spacing-sm;
   position: relative;
   z-index: 1;
 }
 
-.cardBody {
+.cardContent {
   padding: $spacing-lg;
 }
 
-.routeSection {
-  display: flex;
-  align-items: center;
-  margin-bottom: $spacing-xl;
+.cardSection {
+  margin-bottom: $spacing-lg;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
 }
 
-.routePort {
+.sectionLabel {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  margin-bottom: $spacing-sm;
+  display: block;
+}
+
+.routeBox {
+  display: flex;
+  align-items: flex-start;
+  position: relative;
+}
+
+.routePortStart,
+.routePortEnd {
   flex: 1;
   text-align: center;
+  position: relative;
+  z-index: 1;
 }
 
-.portLabel {
-  font-size: $font-size-xs;
-  color: $color-text-tertiary;
-  margin-bottom: $spacing-xs;
+.routePortStart {
+  text-align: left;
+}
+
+.routePortEnd {
+  text-align: right;
+}
+
+.routeDot {
+  width: 24rpx;
+  height: 24rpx;
+  border-radius: 50%;
+  background-color: $color-primary;
+  margin: 0 auto $spacing-sm;
+
+  &.end {
+    background-color: $color-error;
+  }
+}
+
+.routePortStart .routeDot {
+  margin-left: 0;
+}
+
+.routePortEnd .routeDot {
+  margin-right: 0;
 }
 
 .portName {
@@ -105,146 +132,95 @@
 
 .routeLine {
   flex: 1;
-  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.lineTrack {
-  position: absolute;
-  left: 0;
-  right: 0;
-  height: 4rpx;
-  background-color: $color-divider;
-  border-radius: 2rpx;
-}
-
-.lineProgress {
-  position: absolute;
-  left: 0;
-  height: 4rpx;
-  background: linear-gradient(90deg, $color-primary 0%, $color-primary-light 100%);
-  border-radius: 2rpx;
-  transition: width $transition-base ease;
-}
-
-.shipIndicator {
   position: relative;
-  z-index: 1;
-  font-size: 40rpx;
-  filter: drop-shadow(0 2rpx 8rpx rgba(22, 119, 255, 0.3));
+  padding-top: 4rpx;
 }
 
-.progressInfo {
+.cargoInfo {
+  background-color: $color-bg-page;
+  border-radius: $radius-md;
+  padding: $spacing-md;
+}
+
+.infoItem {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: $spacing-lg;
-  padding: $spacing-md;
-  background-color: $color-primary-bg;
-  border-radius: $radius-md;
+  padding: $spacing-sm 0;
+
+  &:first-child {
+    padding-top: 0;
+  }
+
+  &:last-child {
+    padding-bottom: 0;
+  }
+
+  &:not(:last-child) {
+    border-bottom: 1rpx solid $color-divider;
+  }
+}
+
+.itemLabel {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
+.itemValue {
+  font-size: $font-size-sm;
+  color: $color-text-primary;
+  font-weight: $font-weight-medium;
+}
+
+.progressSection {
+  padding-top: $spacing-md;
+  border-top: 1rpx solid $color-divider;
+}
+
+.progressBar {
+  height: 16rpx;
+  background-color: $color-bg-page;
+  border-radius: 8rpx;
+  overflow: hidden;
+  margin-bottom: $spacing-sm;
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, $color-primary 0%, $color-primary-light 100%);
+  border-radius: 8rpx;
+  transition: width $transition-base ease;
 }
 
 .progressText {
   font-size: $font-size-sm;
   color: $color-primary;
   font-weight: $font-weight-medium;
-}
-
-.progressPercent {
-  font-size: $font-size-xl;
-  font-weight: $font-weight-bold;
-  color: $color-primary;
-}
-
-.infoGrid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: $spacing-md;
-}
-
-.infoItem {
-  width: calc(50% - 12rpx);
-  padding: $spacing-md;
-  background-color: $color-bg-page;
-  border-radius: $radius-md;
-}
-
-.infoLabel {
-  font-size: $font-size-xs;
-  color: $color-text-tertiary;
-  margin-bottom: $spacing-xs;
-}
-
-.infoValue {
-  font-size: $font-size-sm;
-  color: $color-text-primary;
-  font-weight: $font-weight-medium;
-}
-
-.etaSection {
-  margin-top: $spacing-lg;
-  padding: $spacing-md;
-  background: linear-gradient(135deg, #fff7e6 0%, #ffe7ba 100%);
-  border-radius: $radius-md;
-  border: 1rpx solid #ffd591;
-}
-
-.etaLabel {
-  font-size: $font-size-xs;
-  color: $color-warning;
-  margin-bottom: $spacing-xs;
-  display: flex;
-  align-items: center;
-  gap: $spacing-xs;
-}
-
-.etaValue {
-  font-size: $font-size-md;
-  color: $color-warning;
-  font-weight: $font-weight-semibold;
+  text-align: right;
 }
 
 .cardFooter {
   padding: $spacing-md $spacing-lg;
   border-top: 1rpx solid $color-divider;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  text-align: center;
 }
 
-.footerLeft {
-  display: flex;
-  align-items: center;
-  gap: $spacing-sm;
-}
-
-.companyLogo {
-  width: 48rpx;
-  height: 48rpx;
-  background-color: $color-primary;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: $color-text-white;
+.updateTime {
   font-size: $font-size-xs;
-  font-weight: $font-weight-bold;
+  color: $color-text-tertiary;
+  display: block;
+  margin-bottom: $spacing-xs;
 }
 
-.companyName {
+.footerText {
   font-size: $font-size-sm;
-  color: $color-text-primary;
+  color: $color-text-secondary;
   font-weight: $font-weight-medium;
 }
 
-.footerTime {
-  font-size: $font-size-xs;
-  color: $color-text-tertiary;
-}
-
-.actionBar {
+.actions {
   position: fixed;
   bottom: 0;
   left: 0;
@@ -283,4 +259,12 @@
     opacity: 0.9;
     transform: scale(0.98);
   }
+}
+
+.tip {
+  text-align: center;
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  margin-top: $spacing-md;
+  padding: 0 $spacing-lg 100rpx;
 }

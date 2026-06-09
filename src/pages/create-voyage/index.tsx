@@ -6,8 +6,11 @@ import classnames from 'classnames';
 import { mockShips } from '@/data/ship';
 import { mockPorts } from '@/data/port';
 import { Ship } from '@/types';
+import useAppStore from '@/store/app';
 
 const CreateVoyagePage: React.FC = () => {
+  const addVoyage = useAppStore(state => state.addVoyage);
+  
   const [cargoName, setCargoName] = useState('');
   const [cargoWeight, setCargoWeight] = useState('');
   const [loadingPort, setLoadingPort] = useState('');
@@ -35,26 +38,61 @@ const CreateVoyagePage: React.FC = () => {
   };
 
   const handleSubmit = () => {
-    if (!cargoName || !cargoWeight || !loadingPort || !unloadingPort || !selectedShip) {
-      Taro.showToast({
-        title: '请填写完整信息',
-        icon: 'none'
-      });
+    if (!cargoName.trim()) {
+      Taro.showToast({ title: '请输入货物名称', icon: 'none' });
+      return;
+    }
+    if (!cargoWeight || parseFloat(cargoWeight) <= 0) {
+      Taro.showToast({ title: '请输入正确的货物重量', icon: 'none' });
+      return;
+    }
+    if (!loadingPort) {
+      Taro.showToast({ title: '请选择装货港', icon: 'none' });
+      return;
+    }
+    if (!unloadingPort) {
+      Taro.showToast({ title: '请选择卸货港', icon: 'none' });
+      return;
+    }
+    if (!selectedShip) {
+      Taro.showToast({ title: '请选择船舶', icon: 'none' });
+      return;
+    }
+    if (!plannedDeparture) {
+      Taro.showToast({ title: '请输入计划出发时间', icon: 'none' });
+      return;
+    }
+    if (!plannedArrival) {
+      Taro.showToast({ title: '请输入计划到达时间', icon: 'none' });
       return;
     }
 
     Taro.showModal({
       title: '确认创建',
-      content: '确认创建该航次吗？',
+      content: `货物：${cargoName}\n重量：${cargoWeight}吨\n航线：${loadingPort} → ${unloadingPort}\n船舶：${selectedShip.name}`,
       success: (res) => {
         if (res.confirm) {
+          addVoyage({
+            shipId: selectedShip.id,
+            shipName: selectedShip.name,
+            captain: selectedShip.captain,
+            cargoId: `c_${Date.now()}`,
+            cargoName: cargoName.trim(),
+            cargoWeight: parseFloat(cargoWeight),
+            loadingPort,
+            unloadingPort,
+            plannedDeparture,
+            plannedArrival
+          });
+
           Taro.showToast({
             title: '创建成功',
             icon: 'success'
           });
+          
           setTimeout(() => {
             Taro.navigateBack();
-          }, 1500);
+          }, 1000);
         }
       }
     });

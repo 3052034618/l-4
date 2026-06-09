@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView } from '@tarojs/components';
-import Taro, { usePullDownRefresh } from '@tarojs/taro';
+import Taro, { usePullDownRefresh, useDidShow } from '@tarojs/taro';
 import styles from './index.module.scss';
 import classnames from 'classnames';
-import { mockMessages } from '@/data/message';
-import { Message, MessageType, messageTypeMap } from '@/types';
+import useAppStore from '@/store/app';
+import { MessageType } from '@/types';
 
 const filterOptions: { key: MessageType | 'all'; label: string }[] = [
   { key: 'all', label: '全部' },
@@ -17,7 +17,18 @@ const filterOptions: { key: MessageType | 'all'; label: string }[] = [
 
 const MessageConfirmPage: React.FC = () => {
   const [activeFilter, setActiveFilter] = useState<MessageType | 'all'>('all');
-  const [messages, setMessages] = useState<Message[]>(mockMessages);
+  const messages = useAppStore(state => state.messages);
+  const markMessageRead = useAppStore(state => state.markMessageRead);
+  const confirmMessage = useAppStore(state => state.confirmMessage);
+  const initFromStorage = useAppStore(state => state.initFromStorage);
+
+  useEffect(() => {
+    initFromStorage();
+  }, [initFromStorage]);
+
+  useDidShow(() => {
+    initFromStorage();
+  });
 
   const filteredMessages = activeFilter === 'all'
     ? messages
@@ -37,25 +48,23 @@ const MessageConfirmPage: React.FC = () => {
     setActiveFilter(key);
   };
 
-  const handleMessageClick = (message: Message) => {
+  const handleMessageClick = (message: any) => {
     if (!message.isRead) {
-      setMessages(prev => prev.map(m => 
-        m.id === message.id ? { ...m, isRead: true } : m
-      ));
+      markMessageRead(message.id);
     }
-    Taro.showToast({
-      title: `查看消息详情`,
-      icon: 'none'
-    });
+    
+    if (message.voyageId) {
+      Taro.navigateTo({
+        url: `/pages/voyage-detail/index?id=${message.voyageId}`
+      });
+    }
   };
 
-  const handleConfirm = (e: any, message: Message) => {
+  const handleConfirm = (e: any, message: any) => {
     e.stopPropagation();
     if (message.isConfirmed) return;
     
-    setMessages(prev => prev.map(m => 
-      m.id === message.id ? { ...m, isConfirmed: true, isRead: true } : m
-    ));
+    confirmMessage(message.id);
     Taro.showToast({
       title: '已确认',
       icon: 'success'
@@ -63,10 +72,33 @@ const MessageConfirmPage: React.FC = () => {
   };
 
   usePullDownRefresh(() => {
+    initFromStorage();
     setTimeout(() => {
       Taro.stopPullDownRefresh();
-    }, 1000);
+    }, 500);
   });
+
+  const getTypeStyle = (type: string) => {
+    const typeMap: Record<string, { color: string; bgColor: string }> = {
+      notice: { color: '#1677ff', bgColor: '#e6f4ff' },
+      change: { color: '#ff7d00', bgColor: '#fff7e6' },
+      delay: { color: '#f53f3f', bgColor: '#fff1f0' },
+      expense: { color: '#722ed1', bgColor: '#f9f0ff' },
+      document: { color: '#1677ff', bgColor: '#e6f4ff' }
+    };
+    return typeMap[type] || typeMap.notice;
+  };
+
+  const getTypeLabel = (type: string) => {
+    const labelMap: Record<string, string> = {
+      notice: '通知',
+      change: '改港改期',
+      delay: '延误',
+      expense: '费用',
+      document: '单据'
+    };
+    return labelMap[type] || '通知';
+  };
 
   return (
     <View className={styles.page}>
@@ -98,7 +130,7 @@ const MessageConfirmPage: React.FC = () => {
       <View className={styles.listContainer}>
         {filteredMessages.length > 0 ? (
           filteredMessages.map(message => {
-            const typeInfo = messageTypeMap[message.type];
+            const typeStyle = getTypeStyle(message.type);
             return (
               <View
                 key={message.id}
@@ -108,8 +140,9 @@ const MessageConfirmPage: React.FC = () => {
                 <View className={styles.cardHeader}>
                   <View
                     className={classnames(styles.typeTag, styles[message.type])}
+                    style={{ color: typeStyle.color, backgroundColor: typeStyle.bgColor }}
                   >
-                    {typeInfo.label}
+                    {getTypeLabel(message.type)}
                   </View>
                   <Text className={styles.messageTitle}>{message.title}</Text>
                 </View>
@@ -122,14 +155,14 @@ const MessageConfirmPage: React.FC = () => {
                 </View>
 
                 <View className={styles.cardFooter}>
-                  <View>
+                  <View style={{ flex: 1 }}>
                     <Text className={styles.senderInfo}>发件人：{message.sender}</Text>
                     <Text className={styles.sendTime}> · {message.sendTime}</Text>
                   </View>
                   {message.needConfirm && (
                     <View
                       className={classnames(styles.actionBtn, message.isConfirmed && styles.confirmed)}
-                      onClick={(e) => handleConfirm(e, message)}
+                      onClick={(e: any) => handleConfirm(e, message)}
                     >
                       {message.isConfirmed ? '已确认' : '确认'}
                     </View>

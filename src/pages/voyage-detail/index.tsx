@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView } from '@tarojs/components';
-import Taro, { useRouter } from '@tarojs/taro';
+import { View, Text, ScrollView, Input, Image } from '@tarojs/components';
+import Taro, { useRouter, useDidShow } from '@tarojs/taro';
 import styles from './index.module.scss';
 import classnames from 'classnames';
 import StatusTag from '@/components/StatusTag';
-import { mockVoyages } from '@/data/voyage';
-import { Voyage, voyageStatusMap } from '@/types';
+import useAppStore from '@/store/app';
+import { Voyage, voyageStatusMap, VoyageStatus } from '@/types';
 
 const timelineSteps = [
   { key: 'pending', label: '待执行', desc: '航次已创建，等待装货' },
@@ -15,55 +15,172 @@ const timelineSteps = [
   { key: 'completed', label: '已完成', desc: '航次完成' }
 ];
 
+const getCurrentTime = () => {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  const hours = String(now.getHours()).padStart(2, '0');
+  const minutes = String(now.getMinutes()).padStart(2, '0');
+  return `${year}-${month}-${day} ${hours}:${minutes}`;
+};
+
 const VoyageDetailPage: React.FC = () => {
   const router = useRouter();
+  const voyageId = router.params.id as string;
+  
+  const getVoyageById = useAppStore(state => state.getVoyageById);
+  const updateVoyageStatus = useAppStore(state => state.updateVoyageStatus);
+  const updateVoyageEta = useAppStore(state => state.updateVoyageEta);
+  const reportDelay = useAppStore(state => state.reportDelay);
+  const addDocument = useAppStore(state => state.addDocument);
+  const initFromStorage = useAppStore(state => state.initFromStorage);
+
   const [voyage, setVoyage] = useState<Voyage | null>(null);
+  const [showReportSheet, setShowReportSheet] = useState(false);
+  const [showEtaModal, setShowEtaModal] = useState(false);
+  const [showDelayModal, setShowDelayModal] = useState(false);
+  const [newEta, setNewEta] = useState('');
+  const [delayReason, setDelayReason] = useState('');
+  const [delayEta, setDelayEta] = useState('');
 
   useEffect(() => {
-    const id = router.params.id;
-    const found = mockVoyages.find(v => v.id === id);
+    loadVoyage();
+  }, [voyageId]);
+
+  useDidShow(() => {
+    initFromStorage();
+    loadVoyage();
+  });
+
+  const loadVoyage = () => {
+    const found = getVoyageById(voyageId);
     if (found) {
       setVoyage(found);
     }
-  }, [router.params.id]);
+  };
 
   const getCurrentStepIndex = () => {
     if (!voyage) return 0;
-    const statusOrder = ['pending', 'loading', 'sailing', 'unloading', 'completed', 'delayed'];
+    const statusOrder: VoyageStatus[] = ['pending', 'loading', 'sailing', 'unloading', 'completed'];
     const idx = statusOrder.indexOf(voyage.status);
     if (voyage.status === 'delayed') return 2;
-    return idx;
-  };
-
-  const handleReport = () => {
-    Taro.showActionSheet({
-      itemList: ['上报开航', '上报抵港', '上报装卸完成', '上报异常延误', '上传单据照片']
-    }).then(res => {
-      const actions = ['开航', '抵港', '装卸完成', '异常延误', '上传单据'];
-      Taro.showToast({
-        title: `${actions[res.tapIndex]}功能`,
-        icon: 'none'
-      });
-    });
-  };
-
-  const handleAdjustEta = () => {
-    Taro.showToast({
-      title: '调整预计到港时间',
-      icon: 'none'
-    });
+    return idx >= 0 ? idx : 0;
   };
 
   const handleViewCard = () => {
     Taro.navigateTo({
-      url: `/pages/transport-card/index?id=${voyage?.id}`
+      url: `/pages/transport-card/index?id=${voyageId}`
+    });
+  };
+
+  const handleAdjustEta = () => {
+    setNewEta(voyage?.plannedArrival || '');
+    setShowEtaModal(true);
+  };
+
+  const handleSaveEta = () => {
+    if (!newEta.trim()) {
+      Taro.showToast({ title: '请输入新的预计到达时间', icon: 'none' });
+      return;
+    }
+    updateVoyageEta(voyageId, newEta.trim(), '调度调整');
+    setShowEtaModal(false);
+    loadVoyage();
+    Taro.showToast({ title: '改期已保存', icon: 'success' });
+  };
+
+  const handleReport = () => {
+    setShowReportSheet(true);
+  };
+
+  const handleReportAction = (action: string) => {
+    setShowReportSheet(false);
+    const now = getCurrentTime();
+
+    switch (action) {
+      case 'departure':
+        if (voyage?.status === 'sailing') {
+          Taro.showToast({ title: '船舶已在航行中', icon: 'none' });
+          return;
+        }
+        updateVoyageStatus(voyageId, 'sailing', now);
+        loadVoyage();
+        Taro.showToast({ title: '开航已上报', icon: 'success' });
+        break;
+      case 'arrival':
+        if (voyage?.status === 'unloading') {
+          Taro.showToast({ title: '船舶已在卸货中', icon: 'none' });
+          return;
+        }
+        updateVoyageStatus(voyageId, 'unloading', now);
+        loadVoyage();
+        Taro.showToast({ title: '抵港已上报', icon: 'success' });
+        break;
+      case 'unload':
+        if (voyage?.status === 'completed') {
+          Taro.showToast({ title: '航次已完成', icon: 'none' });
+          return;
+        }
+        updateVoyageStatus(voyageId, 'completed', now);
+        loadVoyage();
+        Taro.showToast({ title: '装卸完成已上报', icon: 'success' });
+        break;
+      case 'delay':
+        setDelayReason('');
+        setDelayEta(voyage?.plannedArrival || '');
+        setShowDelayModal(true);
+        break;
+    }
+  };
+
+  const handleDelaySubmit = () => {
+    if (!delayReason.trim()) {
+      Taro.showToast({ title: '请填写延误原因', icon: 'none' });
+      return;
+    }
+    if (!delayEta.trim()) {
+      Taro.showToast({ title: '请填写新的预计到达时间', icon: 'none' });
+      return;
+    }
+    reportDelay(voyageId, delayReason.trim(), delayEta.trim());
+    setShowDelayModal(false);
+    loadVoyage();
+    Taro.showToast({ title: '延误已上报', icon: 'success' });
+  };
+
+  const handleAddDocument = () => {
+    Taro.chooseImage({
+      count: 1,
+      sizeType: ['compressed'],
+      sourceType: ['album', 'camera'],
+      success: (res) => {
+        const tempFilePath = res.tempFilePaths[0];
+        addDocument(voyageId, tempFilePath);
+        loadVoyage();
+        Taro.showToast({ title: '单据已上传', icon: 'success' });
+      },
+      fail: (err) => {
+        console.error('[Document] Choose image failed:', err);
+        Taro.showToast({ title: '选择图片失败', icon: 'none' });
+      }
+    });
+  };
+
+  const handlePreviewImage = (url: string) => {
+    const urls = voyage?.documents || [];
+    Taro.previewImage({
+      current: url,
+      urls: urls
     });
   };
 
   if (!voyage) {
     return (
       <View className={styles.page}>
-        <Text>加载中...</Text>
+        <View style={{ padding: '100rpx 0', textAlign: 'center', color: '#86909c' }}>
+          <Text>加载中...</Text>
+        </View>
       </View>
     );
   }
@@ -100,8 +217,6 @@ const VoyageDetailPage: React.FC = () => {
                   timeText = voyage.actualDeparture;
                 } else if (step.key === 'completed' && voyage.actualArrival) {
                   timeText = voyage.actualArrival;
-                } else if (step.key === 'unloading') {
-                  timeText = voyage.plannedArrival;
                 }
 
                 return (
@@ -134,7 +249,10 @@ const VoyageDetailPage: React.FC = () => {
             </View>
             <View className={styles.routePort}>
               <Text className={styles.portName}>{voyage.unloadingPort}</Text>
-              <Text className={styles.portTime}>{voyage.plannedArrival}</Text>
+              <Text className={styles.portTime}>
+                {voyage.plannedArrival}
+                <Text className={styles.etaEditBtn} onClick={handleAdjustEta}>调整</Text>
+              </Text>
             </View>
           </View>
 
@@ -159,9 +277,20 @@ const VoyageDetailPage: React.FC = () => {
         <View className={styles.section}>
           <Text className={styles.sectionTitle}>相关单据</Text>
           <View className={styles.documentsList}>
-            <View className={styles.docItem}>📄</View>
-            <View className={styles.docItem}>📋</View>
-            <View className={styles.docItem}>➕</View>
+            {voyage.documents?.map((doc, index) => (
+              <View 
+                key={index} 
+                className={styles.docItem}
+                onClick={() => handlePreviewImage(doc)}
+              >
+                <Image className={styles.docImage} src={doc} mode="aspectFill" />
+              </View>
+            ))}
+            <View className={styles.docItem} onClick={handleAddDocument}>
+              <View className={styles.docAddBtn}>
+                <Text>＋</Text>
+              </View>
+            </View>
           </View>
         </View>
 
@@ -186,6 +315,110 @@ const VoyageDetailPage: React.FC = () => {
           上报操作
         </View>
       </View>
+
+      {showReportSheet && (
+        <View className={styles.modalOverlay} onClick={() => setShowReportSheet(false)}>
+          <View className={styles.actionSheet} onClick={(e) => e.stopPropagation()}>
+            <View className={styles.reportItem} onClick={() => handleReportAction('departure')}>
+              <View className={styles.reportIcon}>🚢</View>
+              <View className={styles.reportInfo}>
+                <Text className={styles.reportTitle}>上报开航</Text>
+                <Text className={styles.reportDesc}>船舶已完成装货，确认开航</Text>
+              </View>
+              <Text className={styles.reportArrow}>›</Text>
+            </View>
+            <View className={styles.reportItem} onClick={() => handleReportAction('arrival')}>
+              <View className={styles.reportIcon}>⚓</View>
+              <View className={styles.reportInfo}>
+                <Text className={styles.reportTitle}>上报抵港</Text>
+                <Text className={styles.reportDesc}>船舶已到达目的港</Text>
+              </View>
+              <Text className={styles.reportArrow}>›</Text>
+            </View>
+            <View className={styles.reportItem} onClick={() => handleReportAction('unload')}>
+              <View className={styles.reportIcon}>📦</View>
+              <View className={styles.reportInfo}>
+                <Text className={styles.reportTitle}>上报装卸完成</Text>
+                <Text className={styles.reportDesc}>货物装卸作业已完成</Text>
+              </View>
+              <Text className={styles.reportArrow}>›</Text>
+            </View>
+            <View className={styles.reportItem} onClick={() => handleReportAction('delay')}>
+              <View className={styles.reportIcon} style={{ backgroundColor: '#fff1f0' }}>⚠️</View>
+              <View className={styles.reportInfo}>
+                <Text className={styles.reportTitle}>上报异常延误</Text>
+                <Text className={styles.reportDesc}>遇到异常情况，需延误航次</Text>
+              </View>
+              <Text className={styles.reportArrow}>›</Text>
+            </View>
+            <View className={classnames(styles.actionSheetItem, styles.actionSheetCancel)} onClick={() => setShowReportSheet(false)}>
+              取消
+            </View>
+          </View>
+        </View>
+      )}
+
+      {showEtaModal && (
+        <View className={styles.modalOverlay} onClick={() => setShowEtaModal(false)}>
+          <View className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+            <Text className={styles.modalTitle}>调整预计到达时间</Text>
+            <Input
+              className={styles.modalInput}
+              placeholder="请输入新的到达时间"
+              placeholderClass="placeholder"
+              value={newEta}
+              onInput={(e) => setNewEta(e.detail.value)}
+            />
+            <Text style={{ fontSize: '24rpx', color: '#86909c', marginBottom: '16rpx' }}>
+              格式：YYYY-MM-DD HH:mm
+            </Text>
+            <View className={styles.modalActions}>
+              <View className={classnames(styles.modalBtn, styles.cancel)} onClick={() => setShowEtaModal(false)}>
+                取消
+              </View>
+              <View className={classnames(styles.modalBtn, styles.confirm)} onClick={handleSaveEta}>
+                保存
+              </View>
+            </View>
+          </View>
+        </View>
+      )}
+
+      {showDelayModal && (
+        <View className={styles.modalOverlay} onClick={() => setShowDelayModal(false)}>
+          <View className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+            <Text className={styles.modalTitle}>上报异常延误</Text>
+            <Text style={{ fontSize: '26rpx', color: '#4e5969', marginBottom: '24rpx' }}>
+              请填写延误原因和新的预计到达时间
+            </Text>
+            <Input
+              className={styles.modalInput}
+              placeholder="延误原因"
+              placeholderClass="placeholder"
+              value={delayReason}
+              onInput={(e) => setDelayReason(e.detail.value)}
+            />
+            <Input
+              className={styles.modalInput}
+              placeholder="新的预计到达时间"
+              placeholderClass="placeholder"
+              value={delayEta}
+              onInput={(e) => setDelayEta(e.detail.value)}
+            />
+            <Text style={{ fontSize: '24rpx', color: '#86909c' }}>
+              格式：YYYY-MM-DD HH:mm
+            </Text>
+            <View className={styles.modalActions}>
+              <View className={classnames(styles.modalBtn, styles.cancel)} onClick={() => setShowDelayModal(false)}>
+                取消
+              </View>
+              <View className={classnames(styles.modalBtn, styles.confirm)} onClick={handleDelaySubmit}>
+                提交
+              </View>
+            </View>
+          </View>
+        </View>
+      )}
     </View>
   );
 };
