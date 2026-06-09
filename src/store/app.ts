@@ -26,6 +26,7 @@ interface AppState {
   reportDelay: (id: string, reason: string, newEta: string) => void;
   addDocument: (voyageId: string, docUrl: string) => void;
   addConfirmRecord: (voyageId: string, record: Omit<ConfirmRecord, 'id' | 'confirmTime'>) => void;
+  checkShipConflict: (shipId: string, startDate: string, endDate: string, excludeVoyageId?: string) => Voyage[];
   
   addMessage: (message: Omit<Message, 'id' | 'sendTime' | 'isRead'>) => void;
   markMessageRead: (id: string) => void;
@@ -126,10 +127,11 @@ const useAppStore = create<AppState>((set, get) => ({
       updates.progress = 30;
     } else if (status === 'loading') {
       updates.progress = 15;
-    } else if (status === 'unloading') {
-      updates.progress = 85;
+    } else if (status === 'unloading' && actualTime) {
+      updates.actualArrival = actualTime;
+      updates.progress = 70;
     } else if (status === 'completed') {
-      if (actualTime) updates.actualArrival = actualTime;
+      if (actualTime) updates.actualUnloadingFinish = actualTime;
       updates.progress = 100;
     }
     
@@ -295,6 +297,23 @@ const useAppStore = create<AppState>((set, get) => ({
   
   getMessagesByVoyageId: (voyageId) => {
     return get().messages.filter(m => m.voyageId === voyageId);
+  },
+  
+  checkShipConflict: (shipId, startDate, endDate, excludeVoyageId) => {
+    const startTime = new Date(startDate).getTime();
+    const endTime = new Date(endDate).getTime();
+    
+    return get().voyages.filter(v => {
+      if (v.shipId !== shipId) return false;
+      if (excludeVoyageId && v.id === excludeVoyageId) return false;
+      if (v.status === 'completed' && v.actualUnloadingFinish) {
+        const voyageEnd = new Date(v.actualUnloadingFinish).getTime();
+        return voyageEnd > startTime && new Date(v.plannedDeparture).getTime() < endTime;
+      }
+      const voyageStart = new Date(v.plannedDeparture).getTime();
+      const voyageEnd = new Date(v.plannedArrival).getTime();
+      return voyageStart < endTime && voyageEnd > startTime;
+    });
   }
 }));
 

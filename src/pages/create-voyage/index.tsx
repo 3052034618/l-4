@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { View, Text, Input, ScrollView } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import styles from './index.module.scss';
@@ -10,6 +10,8 @@ import useAppStore from '@/store/app';
 
 const CreateVoyagePage: React.FC = () => {
   const addVoyage = useAppStore(state => state.addVoyage);
+  const checkShipConflict = useAppStore(state => state.checkShipConflict);
+  const voyages = useAppStore(state => state.voyages);
   
   const [cargoName, setCargoName] = useState('');
   const [cargoWeight, setCargoWeight] = useState('');
@@ -21,7 +23,12 @@ const CreateVoyagePage: React.FC = () => {
   const [showShipPicker, setShowShipPicker] = useState(false);
   const [showPortPicker, setShowPortPicker] = useState('');
 
-  const availableShips = mockShips.filter(s => s.status === 'idle');
+  const conflictVoyages = useMemo(() => {
+    if (!selectedShip || !plannedDeparture || !plannedArrival) return [];
+    return checkShipConflict(selectedShip.id, plannedDeparture, plannedArrival);
+  }, [selectedShip, plannedDeparture, plannedArrival, checkShipConflict, voyages]);
+
+  const availableShips = mockShips;
 
   const handleSelectShip = (ship: Ship) => {
     setSelectedShip(ship);
@@ -67,9 +74,20 @@ const CreateVoyagePage: React.FC = () => {
       return;
     }
 
+    const hasConflict = conflictVoyages.length > 0;
+    const confirmTitle = hasConflict ? '⚠️ 时间冲突提醒' : '确认创建';
+    let confirmContent = `货物：${cargoName}\n重量：${cargoWeight}吨\n航线：${loadingPort} → ${unloadingPort}\n船舶：${selectedShip.name}\n时间：${plannedDeparture} 至 ${plannedArrival}`;
+    
+    if (hasConflict) {
+      const conflictList = conflictVoyages.map(v => `  · ${v.voyageNo} (${v.plannedDeparture} ~ ${v.plannedArrival})`).join('\n');
+      confirmContent = `检测到该船舶在同一时间段已有任务：\n${conflictList}\n\n${confirmContent}\n\n是否仍要创建该航次？`;
+    }
+
     Taro.showModal({
-      title: '确认创建',
-      content: `货物：${cargoName}\n重量：${cargoWeight}吨\n航线：${loadingPort} → ${unloadingPort}\n船舶：${selectedShip.name}`,
+      title: confirmTitle,
+      content: confirmContent,
+      confirmText: hasConflict ? '仍要创建' : '确认',
+      confirmColor: hasConflict ? '#f53f3f' : '#1677ff',
       success: (res) => {
         if (res.confirm) {
           addVoyage({
@@ -257,6 +275,23 @@ const CreateVoyagePage: React.FC = () => {
               onInput={(e) => setPlannedArrival(e.detail.value)}
             />
           </View>
+
+          {conflictVoyages.length > 0 && (
+            <View className={styles.conflictWarning}>
+              <Text className={styles.conflictIcon}>⚠️</Text>
+              <View className={styles.conflictContent}>
+                <Text className={styles.conflictTitle}>时间冲突提醒</Text>
+                <Text className={styles.conflictDesc}>
+                  该船舶在同一时间段已有 {conflictVoyages.length} 个航次任务：
+                </Text>
+                {conflictVoyages.map(v => (
+                  <Text key={v.id} className={styles.conflictItem}>
+                    · {v.voyageNo} ({v.plannedDeparture} ~ {v.plannedArrival})
+                  </Text>
+                ))}
+              </View>
+            </View>
+          )}
         </View>
       </ScrollView>
 

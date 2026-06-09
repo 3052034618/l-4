@@ -7,21 +7,120 @@
 
 .header {
   background: linear-gradient(135deg, $color-primary 0%, $color-primary-dark 100%);
-  padding: $spacing-xl $page-padding;
-  padding-bottom: $spacing-xl;
+  padding: $spacing-lg $page-padding;
+  padding-bottom: $spacing-lg;
   color: $color-text-white;
+  position: relative;
+}
+
+.headerTop {
+  margin-bottom: $spacing-md;
 }
 
 .headerTitle {
-  font-size: $font-size-xxl;
+  font-size: $font-size-xl;
   font-weight: $font-weight-bold;
-  margin-bottom: $spacing-xs;
+  margin-bottom: 4rpx;
 }
 
 .headerSubtitle {
-  font-size: $font-size-sm;
+  font-size: $font-size-xs;
   opacity: 0.85;
-  margin-bottom: $spacing-lg;
+}
+
+.dateSelector {
+  display: flex;
+  gap: $spacing-xs;
+  margin-bottom: $spacing-md;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: $radius-md;
+  padding: 6rpx;
+}
+
+.dateItem {
+  flex: 1;
+  text-align: center;
+  padding: $spacing-sm 0;
+  border-radius: $radius-sm;
+  transition: all $transition-fast;
+
+  &.active {
+    background-color: $color-bg-card;
+    color: $color-primary;
+  }
+}
+
+.dateLabel {
+  display: block;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  margin-bottom: 2rpx;
+}
+
+.dateSub {
+  display: block;
+  font-size: $font-size-xs;
+  opacity: 0.8;
+}
+
+.filterBar {
+  display: flex;
+  gap: $spacing-sm;
+  margin-bottom: $spacing-md;
+  position: relative;
+  z-index: 20;
+}
+
+.filterItem {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: $radius-sm;
+  padding: $spacing-sm $spacing-md;
+}
+
+.filterLabel {
+  font-size: $font-size-sm;
+  flex: 1;
+  text-align: center;
+}
+
+.filterArrow {
+  font-size: 20rpx;
+  opacity: 0.8;
+}
+
+.pickerDropdown {
+  position: absolute;
+  top: 260rpx;
+  left: $page-padding;
+  right: $page-padding;
+  background-color: $color-bg-card;
+  border-radius: $radius-md;
+  box-shadow: $shadow-popup;
+  z-index: 100;
+  max-height: 400rpx;
+  overflow-y: auto;
+}
+
+.pickerOption {
+  padding: $spacing-md $page-padding;
+  font-size: $font-size-sm;
+  color: $color-text-primary;
+  border-bottom: 1rpx solid $color-divider;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &.selected {
+    color: $color-primary;
+    font-weight: $font-weight-medium;
+    background-color: $color-primary-bg;
+  }
 }
 
 .statsGrid {
@@ -48,10 +147,14 @@
   &.danger .statNum {
     color: #ffa39e;
   }
+
+  &.info .statNum {
+    color: #91caff;
+  }
 }
 
 .statNum {
-  font-size: $font-size-xl;
+  font-size: $font-size-lg;
   font-weight: $font-weight-bold;
   margin-bottom: 4rpx;
 }
@@ -62,7 +165,7 @@
 }
 
 .content {
-  height: calc(100vh - 320rpx);
+  height: calc(100vh - 420rpx);
 }
 
 .groupTabs {
@@ -103,13 +206,13 @@
 }
 
 .tabLabel {
-  font-size: $font-size-sm;
+  font-size: $font-size-xs;
   color: $color-text-secondary;
   margin-bottom: 4rpx;
 }
 
 .tabCount {
-  font-size: $font-size-lg;
+  font-size: $font-size-md;
   font-weight: $font-weight-bold;
   color: $color-text-primary;
 }
@@ -229,13 +332,17 @@
 }
 
 .delayBanner {
-  display: flex;
-  align-items: flex-start;
-  gap: $spacing-sm;
-  padding: $spacing-sm $spacing-md;
   background-color: #fff1f0;
   border-radius: $radius-sm;
+  padding: $spacing-sm $spacing-md;
   margin-bottom: $spacing-sm;
+}
+
+.delayHeader {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  margin-bottom: 6rpx;
 }
 
 .delayIcon {
@@ -243,20 +350,37 @@
   flex-shrink: 0;
 }
 
-.delayContent {
+.delayTitle {
   flex: 1;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $color-error;
+}
+
+.badge {
+  background-color: $color-error;
+  border-radius: $radius-round;
+  padding: 2rpx 12rpx;
+}
+
+.badgeText {
+  font-size: 20rpx;
+  color: $color-text-white;
+  font-weight: $font-weight-medium;
 }
 
 .delayReason {
-  font-size: $font-size-sm;
+  font-size: $font-size-xs;
   color: $color-error;
-  margin-bottom: 4rpx;
   display: block;
+  margin-bottom: 4rpx;
+  line-height: 1.5;
 }
 
 .delayEta {
   font-size: $font-size-xs;
   color: $color-warning;
+  font-weight: $font-weight-medium;
 }
 
 .progressRow {
@@ -302,4 +426,10 @@
 .emptyText {
   font-size: $font-size-md;
   color: $color-text-tertiary;
+  margin-bottom: $spacing-xs;
+}
+
+.emptyHint {
+  font-size: $font-size-xs;
+  color: $color-text-disabled;
 }

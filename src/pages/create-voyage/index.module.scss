@@ -174,3 +174,48 @@
   max-height: 400rpx;
   overflow-y: auto;
 }
+
+.conflictWarning {
+  display: flex;
+  align-items: flex-start;
+  gap: $spacing-sm;
+  margin: $spacing-md;
+  padding: $spacing-md;
+  background-color: #fff1f0;
+  border-radius: $radius-md;
+  border: 1rpx solid #ffccc7;
+}
+
+.conflictIcon {
+  font-size: 32rpx;
+  flex-shrink: 0;
+  margin-top: 2rpx;
+}
+
+.conflictContent {
+  flex: 1;
+}
+
+.conflictTitle {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $color-error;
+  margin-bottom: 6rpx;
+  display: block;
+}
+
+.conflictDesc {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  margin-bottom: $spacing-xs;
+  display: block;
+  line-height: 1.5;
+}
+
+.conflictItem {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  display: block;
+  line-height: 1.6;
+  padding-left: 8rpx;
+}

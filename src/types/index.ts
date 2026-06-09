@@ -64,6 +64,7 @@ export interface Voyage {
   plannedArrival: string;
   actualDeparture?: string;
   actualArrival?: string;
+  actualUnloadingFinish?: string;
   status: VoyageStatus;
   progress: number;
   expense?: string;

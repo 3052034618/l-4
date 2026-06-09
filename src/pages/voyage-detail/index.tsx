@@ -11,8 +11,8 @@ const timelineSteps = [
   { key: 'pending', label: '待执行', desc: '航次已创建，等待装货' },
   { key: 'loading', label: '装货中', desc: '正在装货作业' },
   { key: 'sailing', label: '在航', desc: '船舶航行中' },
-  { key: 'unloading', label: '卸货中', desc: '正在卸货作业' },
-  { key: 'completed', label: '已完成', desc: '航次完成' }
+  { key: 'unloading', label: '已抵港', desc: '船舶已到达目的港' },
+  { key: 'completed', label: '装卸完成', desc: '货物装卸作业完成' }
 ];
 
 const getCurrentTime = () => {
@@ -46,6 +46,7 @@ const VoyageDetailPage: React.FC = () => {
   const reportDelay = useAppStore(state => state.reportDelay);
   const addDocument = useAppStore(state => state.addDocument);
   const initFromStorage = useAppStore(state => state.initFromStorage);
+  const checkShipConflict = useAppStore(state => state.checkShipConflict);
 
   const [voyage, setVoyage] = useState<Voyage | null>(null);
   const [showReportSheet, setShowReportSheet] = useState(false);
@@ -95,6 +96,33 @@ const VoyageDetailPage: React.FC = () => {
       Taro.showToast({ title: '请输入新的预计到达时间', icon: 'none' });
       return;
     }
+    
+    const conflictVoyages = checkShipConflict(
+      voyage!.shipId, 
+      voyage!.plannedDeparture, 
+      newEta.trim(), 
+      voyageId
+    );
+    
+    if (conflictVoyages.length > 0) {
+      const conflictList = conflictVoyages.map(v => `  · ${v.voyageNo} (${v.plannedDeparture} ~ ${v.plannedArrival})`).join('\n');
+      Taro.showModal({
+        title: '⚠️ 时间冲突提醒',
+        content: `调整后，该船舶与其他航次存在时间冲突：\n${conflictList}\n\n是否仍要调整ETA？`,
+        confirmText: '仍要调整',
+        confirmColor: '#f53f3f',
+        success: (res) => {
+          if (res.confirm) {
+            doSaveEta();
+          }
+        }
+      });
+    } else {
+      doSaveEta();
+    }
+  };
+
+  const doSaveEta = () => {
     updateVoyageEta(voyageId, newEta.trim(), '调度调整');
     setShowEtaModal(false);
     loadVoyage();
@@ -120,8 +148,8 @@ const VoyageDetailPage: React.FC = () => {
         Taro.showToast({ title: '开航已上报', icon: 'success' });
         break;
       case 'arrival':
-        if (voyage?.status === 'unloading') {
-          Taro.showToast({ title: '船舶已在卸货中', icon: 'none' });
+        if (voyage?.status === 'unloading' || voyage?.status === 'completed') {
+          Taro.showToast({ title: '船舶已抵港', icon: 'none' });
           return;
         }
         updateVoyageStatus(voyageId, 'unloading', now);
@@ -226,8 +254,10 @@ const VoyageDetailPage: React.FC = () => {
                   timeText = voyage.plannedDeparture;
                 } else if (step.key === 'sailing' && voyage.actualDeparture) {
                   timeText = voyage.actualDeparture;
-                } else if (step.key === 'completed' && voyage.actualArrival) {
+                } else if (step.key === 'unloading' && voyage.actualArrival) {
                   timeText = voyage.actualArrival;
+                } else if (step.key === 'completed' && voyage.actualUnloadingFinish) {
+                  timeText = voyage.actualUnloadingFinish;
                 }
 
                 return (
@@ -292,8 +322,14 @@ const VoyageDetailPage: React.FC = () => {
           )}
           {voyage.actualArrival && (
             <View className={styles.infoRow}>
-              <Text className={styles.label}>实际到达</Text>
+              <Text className={styles.label}>实际抵港</Text>
               <Text className={classnames(styles.value, styles.actualTime)}>{voyage.actualArrival}</Text>
+            </View>
+          )}
+          {voyage.actualUnloadingFinish && (
+            <View className={styles.infoRow}>
+              <Text className={styles.label}>装卸完成</Text>
+              <Text className={classnames(styles.value, styles.actualTime)}>{voyage.actualUnloadingFinish}</Text>
             </View>
           )}
           {voyage.status === 'delayed' && voyage.delayReason && (
