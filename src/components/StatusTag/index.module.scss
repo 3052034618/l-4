@@ -1,0 +1,77 @@
+@use '@/styles/variables.scss' as *;
+
+.statusTag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4rpx 16rpx;
+  border-radius: $radius-sm;
+  font-size: $font-size-sm;
+  line-height: 1.4;
+  white-space: nowrap;
+
+  &.idle {
+    color: $color-idle;
+    background-color: $color-idle-bg;
+  }
+
+  &.sailing {
+    color: $color-sailing;
+    background-color: $color-sailing-bg;
+  }
+
+  &.docked {
+    color: $color-docked;
+    background-color: $color-docked-bg;
+  }
+
+  &.pending {
+    color: $color-info;
+    background-color: $color-info-bg;
+  }
+
+  &.loading {
+    color: $color-warning;
+    background-color: $color-warning-bg;
+  }
+
+  &.unloading {
+    color: $color-warning;
+    background-color: $color-warning-bg;
+  }
+
+  &.completed {
+    color: $color-success;
+    background-color: $color-success-bg;
+  }
+
+  &.delayed {
+    color: $color-error;
+    background-color: $color-error-bg;
+  }
+
+  &.notice {
+    color: $color-primary;
+    background-color: $color-primary-bg;
+  }
+
+  &.change {
+    color: $color-warning;
+    background-color: $color-warning-bg;
+  }
+
+  &.delay {
+    color: $color-error;
+    background-color: $color-error-bg;
+  }
+
+  &.expense {
+    color: #722ed1;
+    background-color: #f9f0ff;
+  }
+
+  &.document {
+    color: $color-primary;
+    background-color: $color-primary-bg;
+  }
+}

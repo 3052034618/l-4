@@ -1,0 +1,103 @@
+@use '@/styles/variables.scss' as *;
+
+.shipCard {
+  background-color: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-md;
+  box-shadow: $shadow-card;
+  transition: all $transition-fast;
+
+  &:active {
+    opacity: 0.9;
+    transform: scale(0.99);
+  }
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-md;
+}
+
+.shipName {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.cardBody {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.infoRow {
+  display: flex;
+  align-items: center;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+
+  .label {
+    color: $color-text-tertiary;
+    margin-right: $spacing-sm;
+    min-width: 100rpx;
+  }
+}
+
+.shipIcon {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: $radius-md;
+  background: linear-gradient(135deg, $color-primary-bg 0%, #e6f4ff 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40rpx;
+  margin-right: $spacing-md;
+}
+
+.cardHeaderLeft {
+  display: flex;
+  align-items: center;
+}
+
+.shipInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+}
+
+.shipImo {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.capacityBar {
+  margin-top: $spacing-sm;
+  padding-top: $spacing-md;
+  border-top: 1rpx solid $color-divider;
+}
+
+.capacityLabel {
+  display: flex;
+  justify-content: space-between;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  margin-bottom: $spacing-xs;
+}
+
+.capacityTrack {
+  height: 12rpx;
+  background-color: $color-divider;
+  border-radius: 6rpx;
+  overflow: hidden;
+}
+
+.capacityFill {
+  height: 100%;
+  background: linear-gradient(90deg, $color-primary 0%, $color-primary-light 100%);
+  border-radius: 6rpx;
+  transition: width $transition-base ease;
+}

@@ -1,0 +1,266 @@
+@use '@/styles/variables.scss' as *;
+
+.page {
+  min-height: 100vh;
+  background-color: $color-bg-page;
+  padding-bottom: 200rpx;
+}
+
+.header {
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-dark 100%);
+  padding: $spacing-xl $page-padding;
+  padding-bottom: $spacing-xl + 60rpx;
+  color: $color-text-white;
+}
+
+.voyageNo {
+  font-size: $font-size-xxl;
+  font-weight: $font-weight-bold;
+  margin-bottom: $spacing-xs;
+}
+
+.statusRow {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.statusBadge {
+  padding: 4rpx 16rpx;
+  border-radius: $radius-sm;
+  font-size: $font-size-sm;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.progressText {
+  font-size: $font-size-sm;
+  opacity: 0.85;
+}
+
+.infoCard {
+  background-color: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  margin: -40rpx $page-padding $spacing-md;
+  box-shadow: $shadow-card;
+}
+
+.progressSection {
+  margin-bottom: $spacing-lg;
+}
+
+.sectionTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-md;
+}
+
+.timeline {
+  position: relative;
+  padding-left: $spacing-lg;
+}
+
+.timelineItem {
+  position: relative;
+  padding-bottom: $spacing-lg;
+  padding-left: $spacing-lg;
+  border-left: 2rpx solid $color-border;
+
+  &:last-child {
+    border-left-color: transparent;
+    padding-bottom: 0;
+  }
+
+  &.completed {
+    border-left-color: $color-success;
+  }
+
+  &.active {
+    border-left-color: $color-primary;
+  }
+}
+
+.timelineDot {
+  position: absolute;
+  left: -10rpx;
+  top: 0;
+  width: 20rpx;
+  height: 20rpx;
+  border-radius: 50%;
+  background-color: $color-border;
+
+  &.completed {
+    background-color: $color-success;
+  }
+
+  &.active {
+    background-color: $color-primary;
+    box-shadow: 0 0 0 6rpx rgba(22, 119, 255, 0.2);
+  }
+}
+
+.timelineContent {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.timelineTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+  margin-bottom: 4rpx;
+}
+
+.timelineTime {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  margin-top: 4rpx;
+}
+
+.routeSection {
+  display: flex;
+  align-items: center;
+  padding: $spacing-md 0;
+  border-top: 1rpx solid $color-divider;
+  border-bottom: 1rpx solid $color-divider;
+  margin: $spacing-md 0;
+}
+
+.routePort {
+  flex: 1;
+  text-align: center;
+}
+
+.portName {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: 4rpx;
+}
+
+.portTime {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.routeMiddle {
+  flex: 1;
+  text-align: center;
+  position: relative;
+}
+
+.routeLine {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 2rpx;
+  background: linear-gradient(90deg, $color-primary 0%, $color-primary-light 100%);
+  transform: translateY(-50%);
+}
+
+.shipIcon {
+  position: relative;
+  z-index: 1;
+  font-size: 48rpx;
+  background-color: $color-bg-card;
+  display: inline-block;
+  padding: 0 $spacing-sm;
+}
+
+.infoRow {
+  display: flex;
+  padding: $spacing-sm 0;
+
+  .label {
+    width: 160rpx;
+    flex-shrink: 0;
+    font-size: $font-size-sm;
+    color: $color-text-tertiary;
+  }
+
+  .value {
+    flex: 1;
+    font-size: $font-size-sm;
+    color: $color-text-primary;
+  }
+}
+
+.section {
+  background-color: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  margin: 0 $page-padding $spacing-md;
+  box-shadow: $shadow-card;
+}
+
+.documentsList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-sm;
+  margin-top: $spacing-sm;
+}
+
+.docItem {
+  width: calc(33.33% - 16rpx);
+  aspect-ratio: 1;
+  background-color: $color-bg-page;
+  border-radius: $radius-md;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48rpx;
+  border: 2rpx dashed $color-border;
+}
+
+.expenseContent {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  line-height: 1.8;
+  padding: $spacing-md;
+  background-color: $color-bg-page;
+  border-radius: $radius-md;
+  margin-top: $spacing-sm;
+}
+
+.bottomBar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: $color-bg-card;
+  padding: $spacing-md $page-padding;
+  padding-bottom: calc(#{$spacing-md} + env(safe-area-inset-bottom));
+  box-shadow: 0 -2rpx 12rpx rgba(0, 0, 0, 0.08);
+  display: flex;
+  gap: $spacing-md;
+  z-index: 100;
+}
+
+.actionBtn {
+  flex: 1;
+  height: $button-height-lg;
+  border-radius: $radius-button;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  transition: all $transition-fast;
+
+  &.primary {
+    background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+    color: $color-text-white;
+  }
+
+  &.secondary {
+    background-color: $color-bg-page;
+    color: $color-text-secondary;
+  }
+
+  &:active {
+    opacity: 0.9;
+    transform: scale(0.98);
+  }
+}

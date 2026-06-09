@@ -1,0 +1,131 @@
+import { Message } from '@/types';
+
+export const mockMessages: Message[] = [
+  {
+    id: 'm1',
+    type: 'change',
+    title: '航次改期通知',
+    content: '航次 NH202406001 因天气原因，预计到港时间由 2024-06-15 18:00 调整为 2024-06-16 10:00，请船长知悉。',
+    voyageId: '1',
+    voyageNo: 'NH202406001',
+    sender: '调度中心-王调度',
+    sendTime: '2024-06-13 14:30',
+    isRead: false,
+    needConfirm: true,
+    isConfirmed: false
+  },
+  {
+    id: 'm2',
+    type: 'notice',
+    title: '开航确认',
+    content: '航次 NH202406002 已完成装货，确认于 2024-06-12 10:30 开航，请调度中心备案。',
+    voyageId: '2',
+    voyageNo: 'NH202406002',
+    sender: '船长-李明',
+    sendTime: '2024-06-12 10:20',
+    isRead: true,
+    needConfirm: false
+  },
+  {
+    id: 'm3',
+    type: 'delay',
+    title: '延误上报',
+    content: '航次 NH202406004 因航道管制，预计延误 24 小时，预计到达时间调整为 2024-06-21 12:00。',
+    voyageId: '4',
+    voyageNo: 'NH202406004',
+    sender: '船长-赵刚',
+    sendTime: '2024-06-13 08:00',
+    isRead: false,
+    needConfirm: true,
+    isConfirmed: false
+  },
+  {
+    id: 'm4',
+    type: 'expense',
+    title: '航次费用明细',
+    content: '航次 NH202406003 费用明细已生成：运费 ¥88,000、港务费 ¥6,200、其他 ¥1,500，总计 ¥95,700。',
+    voyageId: '3',
+    voyageNo: 'NH202406003',
+    sender: '财务-刘会计',
+    sendTime: '2024-06-12 16:00',
+    isRead: true,
+    needConfirm: false
+  },
+  {
+    id: 'm5',
+    type: 'document',
+    title: '单据上传通知',
+    content: '航次 NH202406001 装货单已上传，请调度中心查收审核。',
+    voyageId: '1',
+    voyageNo: 'NH202406001',
+    sender: '船长-张伟',
+    sendTime: '2024-06-10 11:00',
+    isRead: true,
+    needConfirm: true,
+    isConfirmed: true
+  },
+  {
+    id: 'm6',
+    type: 'notice',
+    title: '抵港通知',
+    content: '航次 NH202406003 已于 2024-06-12 08:30 安全抵达上海港，开始卸货作业。',
+    voyageId: '3',
+    voyageNo: 'NH202406003',
+    sender: '船长-王强',
+    sendTime: '2024-06-12 08:35',
+    isRead: true,
+    needConfirm: false
+  },
+  {
+    id: 'm7',
+    type: 'change',
+    title: '卸货港变更',
+    content: '航次 NH202406005 应客户要求，卸货港由武汉港变更为九江港，请船长调整航线。',
+    voyageId: '5',
+    voyageNo: 'NH202406005',
+    sender: '调度中心-李调度',
+    sendTime: '2024-06-11 09:00',
+    isRead: false,
+    needConfirm: true,
+    isConfirmed: false
+  },
+  {
+    id: 'm8',
+    type: 'notice',
+    title: '装卸完成通知',
+    content: '航次 NH202406008 已完成卸货，全部货物交接完毕，单据已上传。',
+    voyageId: '8',
+    voyageNo: 'NH202406008',
+    sender: '船长-孙浩',
+    sendTime: '2024-06-11 17:30',
+    isRead: true,
+    needConfirm: true,
+    isConfirmed: true
+  },
+  {
+    id: 'm9',
+    type: 'delay',
+    title: '异常延误申请',
+    content: '航次 NH202406004 因主机故障，需在黄石港临时停靠维修，预计延误48小时，请批准。',
+    voyageId: '4',
+    voyageNo: 'NH202406004',
+    sender: '船长-赵刚',
+    sendTime: '2024-06-12 22:00',
+    isRead: true,
+    needConfirm: true,
+    isConfirmed: true
+  },
+  {
+    id: 'm10',
+    type: 'document',
+    title: '提单上传',
+    content: '航次 NH202406006 提单及相关单据已全部上传，请审核。',
+    voyageId: '6',
+    voyageNo: 'NH202406006',
+    sender: '船长-陈涛',
+    sendTime: '2024-06-13 10:00',
+    isRead: false,
+    needConfirm: true,
+    isConfirmed: false
+  }
+];

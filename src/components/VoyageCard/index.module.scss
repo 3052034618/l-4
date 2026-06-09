@@ -1,0 +1,119 @@
+@use '@/styles/variables.scss' as *;
+
+.voyageCard {
+  background-color: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-md;
+  box-shadow: $shadow-card;
+
+  &:active {
+    opacity: 0.9;
+    transform: scale(0.99);
+    transition: all $transition-fast;
+  }
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-md;
+}
+
+.voyageNo {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.cardBody {
+  margin-bottom: $spacing-md;
+}
+
+.routeInfo {
+  display: flex;
+  align-items: center;
+  margin-bottom: $spacing-md;
+
+  .port {
+    flex: 1;
+    font-size: $font-size-md;
+    font-weight: $font-weight-medium;
+    color: $color-text-primary;
+  }
+
+  .arrow {
+    padding: 0 $spacing-sm;
+    color: $color-primary;
+    font-size: $font-size-lg;
+  }
+}
+
+.cargoInfo {
+  display: flex;
+  align-items: center;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  margin-bottom: $spacing-sm;
+
+  .label {
+    color: $color-text-tertiary;
+    margin-right: $spacing-sm;
+  }
+}
+
+.timeInfo {
+  display: flex;
+  align-items: center;
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
+.cardFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: $spacing-md;
+  border-top: 1rpx solid $color-divider;
+}
+
+.shipInfo {
+  display: flex;
+  align-items: center;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+
+  .captain {
+    margin-left: $spacing-sm;
+    color: $color-text-tertiary;
+  }
+}
+
+.progressInfo {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.progressBar {
+  width: 120rpx;
+  height: 8rpx;
+  background-color: $color-divider;
+  border-radius: 4rpx;
+  overflow: hidden;
+
+  .progressFill {
+    height: 100%;
+    background: linear-gradient(90deg, $color-primary 0%, $color-primary-light 100%);
+    border-radius: 4rpx;
+    transition: width $transition-base ease;
+  }
+}
+
+.progressText {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  min-width: 60rpx;
+  text-align: right;
+}
