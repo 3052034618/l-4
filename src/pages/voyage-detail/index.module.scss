@@ -469,3 +469,90 @@
   font-size: $font-size-xs;
   border-radius: $radius-sm;
 }
+
+.actualTime {
+  color: $color-success;
+  font-weight: $font-weight-medium;
+}
+
+.delayInfo {
+  padding: $spacing-sm $spacing-md;
+  background-color: #fff1f0;
+  border-radius: $radius-sm;
+  margin-top: $spacing-sm;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.delayLabel {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.delayText {
+  font-size: $font-size-sm;
+  color: $color-error;
+  font-weight: $font-weight-medium;
+  text-align: right;
+  flex: 1;
+  margin-left: $spacing-md;
+}
+
+.newEtaText {
+  font-size: $font-size-sm;
+  color: $color-warning;
+  font-weight: $font-weight-medium;
+}
+
+.confirmList {
+  margin-top: $spacing-sm;
+}
+
+.confirmItem {
+  padding: $spacing-md;
+  background-color: $color-bg-page;
+  border-radius: $radius-md;
+  margin-bottom: $spacing-sm;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.confirmHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-sm;
+}
+
+.confirmTitle {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+}
+
+.confirmType {
+  font-size: $font-size-xs;
+  color: $color-primary;
+  background-color: $color-primary-bg;
+  padding: 2rpx 12rpx;
+  border-radius: $radius-sm;
+}
+
+.confirmFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.confirmer {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+}
+
+.confirmTime {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}

@@ -1,12 +1,14 @@
 import { create } from 'zustand';
 import Taro from '@tarojs/taro';
-import { Voyage, Message, VoyageStatus, MessageType } from '@/types';
+import { Voyage, Message, VoyageStatus, MessageType, ConfirmRecord } from '@/types';
 import { mockVoyages } from '@/data/voyage';
 import { mockMessages } from '@/data/message';
 
 const VOYAGES_STORAGE_KEY = 'water_transport_voyages';
 const MESSAGES_STORAGE_KEY = 'water_transport_messages';
 const SHIPS_STORAGE_KEY = 'water_transport_ships';
+
+const CURRENT_USER = '调度员-张调度';
 
 interface AppState {
   voyages: Voyage[];
@@ -23,11 +25,13 @@ interface AppState {
   updateVoyageEta: (id: string, newEta: string, reason?: string) => void;
   reportDelay: (id: string, reason: string, newEta: string) => void;
   addDocument: (voyageId: string, docUrl: string) => void;
+  addConfirmRecord: (voyageId: string, record: Omit<ConfirmRecord, 'id' | 'confirmTime'>) => void;
   
   addMessage: (message: Omit<Message, 'id' | 'sendTime' | 'isRead'>) => void;
   markMessageRead: (id: string) => void;
-  confirmMessage: (id: string) => void;
+  confirmMessage: (id: string, confirmer?: string) => void;
   getUnreadCount: () => number;
+  getMessagesByVoyageId: (voyageId: string) => Message[];
 }
 
 const generateId = () => {
@@ -182,7 +186,9 @@ const useAppStore = create<AppState>((set, get) => ({
     
     get().updateVoyage(id, { 
       status: 'delayed',
-      plannedArrival: newEta
+      plannedArrival: newEta,
+      delayReason: reason,
+      newEta: newEta
     });
     
     const newMessage: Omit<Message, 'id' | 'sendTime' | 'isRead'> = {
@@ -237,16 +243,58 @@ const useAppStore = create<AppState>((set, get) => ({
     Taro.setStorageSync(MESSAGES_STORAGE_KEY, newMessages);
   },
   
-  confirmMessage: (id) => {
+  confirmMessage: (id, confirmer) => {
+    const message = get().messages.find(m => m.id === id);
+    if (!message) return;
+    
+    const confirmerName = confirmer || CURRENT_USER;
+    const confirmTime = getCurrentTime();
+    
     const newMessages = get().messages.map(m => 
-      m.id === id ? { ...m, isRead: true, isConfirmed: true } : m
+      m.id === id ? { 
+        ...m, 
+        isRead: true, 
+        isConfirmed: true,
+        confirmer: confirmerName,
+        confirmTime
+      } : m
     );
     set({ messages: newMessages });
     Taro.setStorageSync(MESSAGES_STORAGE_KEY, newMessages);
+    
+    if (message.voyageId && message.needConfirm) {
+      get().addConfirmRecord(message.voyageId, {
+        messageId: message.id,
+        type: message.type,
+        title: message.title,
+        confirmer: confirmerName
+      });
+    }
+  },
+  
+  addConfirmRecord: (voyageId, record) => {
+    const voyage = get().getVoyageById(voyageId);
+    if (!voyage) return;
+    
+    const newRecord: ConfirmRecord = {
+      id: generateId(),
+      confirmTime: getCurrentTime(),
+      ...record
+    };
+    
+    const confirmRecords = voyage.confirmRecords 
+      ? [...voyage.confirmRecords, newRecord] 
+      : [newRecord];
+    
+    get().updateVoyage(voyageId, { confirmRecords });
   },
   
   getUnreadCount: () => {
     return get().messages.filter(m => !m.isRead).length;
+  },
+  
+  getMessagesByVoyageId: (voyageId) => {
+    return get().messages.filter(m => m.voyageId === voyageId);
   }
 }));
 

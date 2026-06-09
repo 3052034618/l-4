@@ -168,6 +168,14 @@ const MessageConfirmPage: React.FC = () => {
                     </View>
                   )}
                 </View>
+
+                {message.isConfirmed && message.confirmer && (
+                  <View className={styles.confirmInfo}>
+                    <Text className={styles.confirmText}>
+                      ✓ {message.confirmer} 于 {message.confirmTime} 确认
+                    </Text>
+                  </View>
+                )}
               </View>
             );
           })

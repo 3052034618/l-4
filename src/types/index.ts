@@ -39,6 +39,16 @@ export interface Port {
   description: string;
 }
 
+export interface ConfirmRecord {
+  id: string;
+  messageId: string;
+  type: MessageType;
+  title: string;
+  confirmer: string;
+  confirmTime: string;
+  remark?: string;
+}
+
 export interface Voyage {
   id: string;
   voyageNo: string;
@@ -58,6 +68,9 @@ export interface Voyage {
   progress: number;
   expense?: string;
   documents?: string[];
+  delayReason?: string;
+  newEta?: string;
+  confirmRecords?: ConfirmRecord[];
 }
 
 export interface Message {
@@ -72,6 +85,8 @@ export interface Message {
   isRead: boolean;
   needConfirm: boolean;
   isConfirmed?: boolean;
+  confirmer?: string;
+  confirmTime?: string;
 }
 
 export const shipStatusMap: Record<ShipStatus, { label: string; color: string; bgColor: string }> = {

@@ -1,0 +1,305 @@
+@use '@/styles/variables.scss' as *;
+
+.page {
+  min-height: 100vh;
+  background-color: $color-bg-page;
+}
+
+.header {
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-dark 100%);
+  padding: $spacing-xl $page-padding;
+  padding-bottom: $spacing-xl;
+  color: $color-text-white;
+}
+
+.headerTitle {
+  font-size: $font-size-xxl;
+  font-weight: $font-weight-bold;
+  margin-bottom: $spacing-xs;
+}
+
+.headerSubtitle {
+  font-size: $font-size-sm;
+  opacity: 0.85;
+  margin-bottom: $spacing-lg;
+}
+
+.statsGrid {
+  display: flex;
+  gap: $spacing-sm;
+}
+
+.statCard {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  border-radius: $radius-lg;
+  padding: $spacing-md $spacing-sm;
+  text-align: center;
+
+  &.warning .statNum {
+    color: #ffd666;
+  }
+
+  &.success .statNum {
+    color: #95de64;
+  }
+
+  &.danger .statNum {
+    color: #ffa39e;
+  }
+}
+
+.statNum {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  margin-bottom: 4rpx;
+}
+
+.statLabel {
+  font-size: $font-size-xs;
+  opacity: 0.9;
+}
+
+.content {
+  height: calc(100vh - 320rpx);
+}
+
+.groupTabs {
+  display: flex;
+  gap: $spacing-sm;
+  padding: $spacing-md $page-padding;
+  background-color: $color-bg-page;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.groupTab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: $spacing-md $spacing-sm;
+  background-color: $color-bg-card;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-card;
+  transition: all $transition-fast;
+
+  &.active {
+    background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+    
+    .tabIcon,
+    .tabLabel,
+    .tabCount {
+      color: $color-text-white;
+    }
+  }
+}
+
+.tabIcon {
+  font-size: 36rpx;
+  margin-bottom: $spacing-xs;
+}
+
+.tabLabel {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  margin-bottom: 4rpx;
+}
+
+.tabCount {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+}
+
+.voyageList {
+  padding: 0 $page-padding $spacing-xl;
+}
+
+.voyageItem {
+  background-color: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-md;
+  box-shadow: $shadow-card;
+  position: relative;
+  overflow: hidden;
+  transition: all $transition-fast;
+
+  &:active {
+    transform: scale(0.99);
+  }
+
+  &.delayedItem {
+    border-left: 6rpx solid $color-error;
+  }
+}
+
+.itemHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-md;
+}
+
+.voyageNo {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.statusTag {
+  padding: 4rpx 16rpx;
+  border-radius: $radius-sm;
+  font-size: $font-size-xs;
+}
+
+.routeRow {
+  display: flex;
+  align-items: center;
+  margin-bottom: $spacing-sm;
+}
+
+.portName {
+  flex: 1;
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+
+  &:last-child {
+    text-align: right;
+  }
+}
+
+.routeArrow {
+  padding: 0 $spacing-sm;
+  color: $color-primary;
+  font-size: $font-size-md;
+}
+
+.infoRow {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: $spacing-sm;
+}
+
+.cargoInfo {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.shipInfo {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
+.timeRow {
+  display: flex;
+  gap: $spacing-lg;
+  margin-bottom: $spacing-sm;
+  padding: $spacing-sm 0;
+  border-top: 1rpx solid $color-divider;
+  border-bottom: 1rpx solid $color-divider;
+}
+
+.timeItem {
+  flex: 1;
+}
+
+.timeLabel {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  margin-bottom: 4rpx;
+}
+
+.timeValue {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.etaValue {
+  color: $color-primary;
+  font-weight: $font-weight-medium;
+
+  &.actualArrival {
+    color: $color-success;
+  }
+}
+
+.delayBanner {
+  display: flex;
+  align-items: flex-start;
+  gap: $spacing-sm;
+  padding: $spacing-sm $spacing-md;
+  background-color: #fff1f0;
+  border-radius: $radius-sm;
+  margin-bottom: $spacing-sm;
+}
+
+.delayIcon {
+  font-size: 28rpx;
+  flex-shrink: 0;
+}
+
+.delayContent {
+  flex: 1;
+}
+
+.delayReason {
+  font-size: $font-size-sm;
+  color: $color-error;
+  margin-bottom: 4rpx;
+  display: block;
+}
+
+.delayEta {
+  font-size: $font-size-xs;
+  color: $color-warning;
+}
+
+.progressRow {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.progressBar {
+  flex: 1;
+  height: 12rpx;
+  background-color: $color-bg-page;
+  border-radius: 6rpx;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  border-radius: 6rpx;
+  transition: width $transition-base ease;
+}
+
+.progressText {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  min-width: 60rpx;
+  text-align: right;
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 120rpx 0;
+}
+
+.emptyIcon {
+  font-size: 100rpx;
+  margin-bottom: $spacing-md;
+  opacity: 0.5;
+}
+
+.emptyText {
+  font-size: $font-size-md;
+  color: $color-text-tertiary;
+}

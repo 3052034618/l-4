@@ -70,6 +70,8 @@ export const mockVoyages: Voyage[] = [
     actualDeparture: '2024-06-11 07:30',
     status: 'delayed',
     progress: 30,
+    delayReason: '遭遇大雾天气，航行速度受限',
+    newEta: '2024-06-21 18:00',
     expense: '运费：¥95,000 | 港务费：¥7,800 | 滞期费：¥5,000'
   },
   {

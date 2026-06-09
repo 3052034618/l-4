@@ -48,6 +48,30 @@
   }
 }
 
+.headerTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-sm;
+  position: relative;
+  z-index: 1;
+}
+
+.cardTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: $color-text-white;
+  position: relative;
+  z-index: 1;
+}
+
+.voyageNoText {
+  font-size: $font-size-sm;
+  color: rgba(255,255,255,0.85);
+  position: relative;
+  z-index: 1;
+}
+
 .statusTag {
   display: inline-block;
   padding: 6rpx 20rpx;
@@ -128,6 +152,11 @@
 .portTime {
   font-size: $font-size-xs;
   color: $color-text-secondary;
+
+  &.etaDelayed {
+    color: $color-error;
+    font-weight: $font-weight-medium;
+  }
 }
 
 .routeLine {

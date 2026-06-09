@@ -221,3 +221,14 @@
     color: $color-text-tertiary;
   }
 }
+
+.confirmInfo {
+  margin-top: $spacing-sm;
+  padding-top: $spacing-sm;
+  border-top: 1rpx dashed $color-divider;
+}
+
+.confirmText {
+  font-size: $font-size-xs;
+  color: $color-success;
+}

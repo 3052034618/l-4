@@ -5,7 +5,7 @@ import styles from './index.module.scss';
 import classnames from 'classnames';
 import StatusTag from '@/components/StatusTag';
 import useAppStore from '@/store/app';
-import { Voyage, voyageStatusMap, VoyageStatus } from '@/types';
+import { Voyage, voyageStatusMap, VoyageStatus, MessageType } from '@/types';
 
 const timelineSteps = [
   { key: 'pending', label: '待执行', desc: '航次已创建，等待装货' },
@@ -23,6 +23,17 @@ const getCurrentTime = () => {
   const hours = String(now.getHours()).padStart(2, '0');
   const minutes = String(now.getMinutes()).padStart(2, '0');
   return `${year}-${month}-${day} ${hours}:${minutes}`;
+};
+
+const getTypeLabel = (type: MessageType) => {
+  const labelMap: Record<MessageType, string> = {
+    notice: '通知',
+    change: '改港改期',
+    delay: '延误',
+    expense: '费用',
+    document: '单据'
+  };
+  return labelMap[type] || '通知';
 };
 
 const VoyageDetailPage: React.FC = () => {
@@ -272,6 +283,31 @@ const VoyageDetailPage: React.FC = () => {
             <Text className={styles.label}>船长</Text>
             <Text className={styles.value}>{voyage.captain}</Text>
           </View>
+          
+          {voyage.actualDeparture && (
+            <View className={styles.infoRow}>
+              <Text className={styles.label}>实际开航</Text>
+              <Text className={classnames(styles.value, styles.actualTime)}>{voyage.actualDeparture}</Text>
+            </View>
+          )}
+          {voyage.actualArrival && (
+            <View className={styles.infoRow}>
+              <Text className={styles.label}>实际到达</Text>
+              <Text className={classnames(styles.value, styles.actualTime)}>{voyage.actualArrival}</Text>
+            </View>
+          )}
+          {voyage.status === 'delayed' && voyage.delayReason && (
+            <View className={styles.delayInfo}>
+              <Text className={styles.delayLabel}>延误原因</Text>
+              <Text className={styles.delayText}>{voyage.delayReason}</Text>
+            </View>
+          )}
+          {voyage.status === 'delayed' && voyage.newEta && (
+            <View className={styles.delayInfo}>
+              <Text className={styles.delayLabel}>新ETA</Text>
+              <Text className={styles.newEtaText}>{voyage.newEta}</Text>
+            </View>
+          )}
         </View>
 
         <View className={styles.section}>
@@ -293,6 +329,26 @@ const VoyageDetailPage: React.FC = () => {
             </View>
           </View>
         </View>
+
+        {voyage.confirmRecords && voyage.confirmRecords.length > 0 && (
+          <View className={styles.section}>
+            <Text className={styles.sectionTitle}>调度确认记录</Text>
+            <View className={styles.confirmList}>
+              {voyage.confirmRecords.map(record => (
+                <View key={record.id} className={styles.confirmItem}>
+                  <View className={styles.confirmHeader}>
+                    <Text className={styles.confirmTitle}>{record.title}</Text>
+                    <Text className={styles.confirmType}>{getTypeLabel(record.type)}</Text>
+                  </View>
+                  <View className={styles.confirmFooter}>
+                    <Text className={styles.confirmer}>确认人：{record.confirmer}</Text>
+                    <Text className={styles.confirmTime}>{record.confirmTime}</Text>
+                  </View>
+                </View>
+              ))}
+            </View>
+          </View>
+        )}
 
         {voyage.expense && (
           <View className={styles.section}>

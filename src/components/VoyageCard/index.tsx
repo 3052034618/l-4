@@ -7,9 +7,10 @@ import { Voyage, voyageStatusMap } from '@/types';
 
 interface VoyageCardProps {
   voyage: Voyage;
+  showDelayReason?: boolean;
 }
 
-const VoyageCard: React.FC<VoyageCardProps> = ({ voyage }) => {
+const VoyageCard: React.FC<VoyageCardProps> = ({ voyage, showDelayReason = false }) => {
   const statusInfo = voyageStatusMap[voyage.status];
 
   const handleClick = () => {
@@ -17,6 +18,8 @@ const VoyageCard: React.FC<VoyageCardProps> = ({ voyage }) => {
       url: `/pages/voyage-detail/index?id=${voyage.id}`
     });
   };
+
+  const displayArrival = voyage.actualArrival || voyage.plannedArrival;
 
   return (
     <View className={styles.voyageCard} onClick={handleClick}>
@@ -38,8 +41,34 @@ const VoyageCard: React.FC<VoyageCardProps> = ({ voyage }) => {
         </View>
 
         <View className={styles.timeInfo}>
-          <Text>计划出发：{voyage.plannedDeparture}</Text>
+          <View className={styles.timeItem}>
+            <Text className={styles.timeLabel}>出发：</Text>
+            <Text>{voyage.actualDeparture || voyage.plannedDeparture}</Text>
+          </View>
         </View>
+        <View className={styles.timeInfo}>
+          <View className={styles.timeItem}>
+            <Text className={styles.timeLabel}>
+              {voyage.actualArrival ? '实际到达：' : '预计到达：'}
+            </Text>
+            <Text className={voyage.actualArrival ? styles.actualTime : styles.etaTime}>
+              {displayArrival}
+            </Text>
+          </View>
+        </View>
+
+        {showDelayReason && voyage.status === 'delayed' && voyage.delayReason && (
+          <View className={styles.delayReason}>
+            <Text className={styles.delayLabel}>延误原因：</Text>
+            <Text className={styles.delayText}>{voyage.delayReason}</Text>
+          </View>
+        )}
+        {showDelayReason && voyage.status === 'delayed' && voyage.newEta && (
+          <View className={styles.delayReason}>
+            <Text className={styles.delayLabel}>新ETA：</Text>
+            <Text className={styles.newEta}>{voyage.newEta}</Text>
+          </View>
+        )}
       </View>
 
       <View className={styles.cardFooter}>

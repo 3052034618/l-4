@@ -68,6 +68,53 @@
   align-items: center;
   font-size: $font-size-sm;
   color: $color-text-tertiary;
+  margin-bottom: $spacing-xs;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.timeItem {
+  display: flex;
+  align-items: center;
+}
+
+.timeLabel {
+  color: $color-text-tertiary;
+  margin-right: $spacing-xs;
+}
+
+.etaTime {
+  color: $color-primary;
+  font-weight: $font-weight-medium;
+}
+
+.actualTime {
+  color: $color-success;
+  font-weight: $font-weight-medium;
+}
+
+.delayReason {
+  margin-top: $spacing-sm;
+  padding: $spacing-sm $spacing-md;
+  background-color: #fff1f0;
+  border-radius: $radius-sm;
+  font-size: $font-size-xs;
+}
+
+.delayLabel {
+  color: $color-error;
+  font-weight: $font-weight-medium;
+}
+
+.delayText {
+  color: $color-text-secondary;
+}
+
+.newEta {
+  color: $color-warning;
+  font-weight: $font-weight-medium;
 }
 
 .cardFooter {
